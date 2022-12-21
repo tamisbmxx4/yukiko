@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- Inspired by:- https://youtu.be/ymmtEgp0Tuc -->
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flowers buat yukikoo</title>
+    <script src="jembud.js"></script>
+    <style>
+        html,
+        body {
+            margin: 0px;
+        }
+
+        canvas {
+            display: block;
+            
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="ctx"></canvas>
+</body>
+
+<script>
+    var canvas, c, W, H;
+    var x, y, col = ['#ec155b', '#27e34c', '#ffb7c5', '#3fd4e8', '#ec155b', '#effa20', '#dbd5d5'][random(0, 6)], fool = 0, quadrant;
+    // https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/globalCompositeOperation
+    var mode = ['soft-light', 'hue', 'multiply', 'color-burn', 'color-dodge', 'existing content'];
+    var n = 0, scale = 5, flag = 1;
+    
+
+    function random(max = 1, min = 0) {
+        return Math.round(Math.random() * (max - min) + min);
+    }
+    
+
+    // Sets up the canvas and begins the animation
+    function init() {
+        canvas = document.getElementById("ctx");
+        W = canvas.width = window.innerWidth;
+        H = canvas.height = window.innerHeight;
+        c = canvas.getContext("2d");
+
+        quadrant = [[W/2,H/2], [random(20,W/2-20),random(20,H/2-20)],[random(W/2,W-20),random(20,H/2-20)],[random(20,W/2),random(H/2,H-20)],[random(W/2,W-20),random(H/2,H-20)]];
+        for (var i = 0; i < 5; i++) animate();
+    }
+
+
+    function Flower() {
+        if (n % 13 == 0) c.globalCompositeOperation = mode[n % mode.length];
+        // 2PI/no of petals = 6.28/7 = 0.9
+        let angle = n * 0.9; 
+        let radius = scale * Math.sqrt(n);
+        let pX = radius * Math.sin(angle) + x, pY = radius * Math.cos(angle) + y;
+        c.fillStyle = col;
+        c.strokeStyle = '#666164';
+        c.lineWidth = 3.5;
+        c.beginPath();
+        c.arc(pX, pY, 20, 0, Math.PI * 2);
+        c.closePath();
+        c.fill();
+        c.stroke();
+        n++;
+    }
+
+    
+    function animate() {
+        if (flag && fool < 5) {  
+            x = quadrant[fool][0], y = quadrant[fool][1];
+            flag = 0;
+            fool++;
+        }
+
+        Flower(x, y);
+        
+        if (n > 100) {
+            flag = 1;
+            n = 0;
+            return;
+        }
+
+        requestAnimationFrame(animate);
+    }
+    
+    window.onload = init;
+
+</script>
+
+</html>
